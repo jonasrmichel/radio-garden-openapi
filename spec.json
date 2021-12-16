@@ -1,0 +1,946 @@
+{
+    "openapi": "3.0.2",
+    "info": {
+        "title": "Radio Garden",
+        "description": "An unofficial specification of the [Radio Garden](https://radio.garden/) API.",
+        "license": {
+            "name": "Apache 2.0",
+            "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "0.1.0"
+    },
+    "servers": [
+        {
+            "url": "http://radio.garden/api"
+        },
+        {
+            "url": "https://radio.garden/api"
+        }
+    ],
+    "tags": [
+        {
+            "name": "places",
+            "description": "Get info about places"
+        },
+        {
+            "name": "channels",
+            "description": "Get info about radio stations"
+        },
+        {
+            "name": "search",
+            "description": "Search countires, places, and radio stations"
+        },
+        {
+            "name": "geo",
+            "description": "Geolocate clients"
+        }
+    ],
+    "paths": {
+        "/ara/content/places": {
+            "get": {
+                "tags": [
+                    "places"
+                ],
+                "summary": "Get places with registered radio stations",
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/Versioned"
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "data": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "list": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "$ref": "#/components/schemas/Place"
+                                                            }
+                                                        },
+                                                        "version": {
+                                                            "type": "string",
+                                                            "example": "9bd5454"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/ara/content/page/{placeId}": {
+            "parameters": [
+                {
+                    "name": "placeId",
+                    "in": "path",
+                    "description": "ID of place to use",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "get": {
+                "tags": [
+                    "places"
+                ],
+                "summary": "Get a place's details",
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/Versioned"
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "data": {
+                                                    "allOf": [
+                                                        {
+                                                            "$ref": "#/components/schemas/PlaceRef"
+                                                        },
+                                                        {
+                                                            "$ref": "#/components/schemas/PlaceContent"
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/ara/content/page/{placeId}/channels": {
+            "parameters": [
+                {
+                    "name": "placeId",
+                    "in": "path",
+                    "description": "ID of place to use",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "get": {
+                "tags": [
+                    "places"
+                ],
+                "summary": "Get a place's registered radio stations",
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/Versioned"
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "data": {
+                                                    "allOf": [
+                                                        {
+                                                            "$ref": "#/components/schemas/PlaceRef"
+                                                        },
+                                                        {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "content": {
+                                                                    "type": "array",
+                                                                    "items": {
+                                                                        "$ref": "#/components/schemas/ChannelRefs"
+                                                                    },
+                                                                    "minItems": 1,
+                                                                    "maxItems": 1
+                                                                }
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/ara/content/channel/{channelId}": {
+            "parameters": [
+                {
+                    "name": "channelId",
+                    "in": "path",
+                    "description": "ID of radio station to use",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "get": {
+                "tags": [
+                    "channels"
+                ],
+                "summary": "Get a radio station's details",
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/Versioned"
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "data": {
+                                                    "$ref": "#/components/schemas/Channel"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/ara/content/listen/{channelId}/channel.mp3": {
+            "parameters": [
+                {
+                    "name": "channelId",
+                    "in": "path",
+                    "description": "ID of radio station to use",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "get": {
+                "tags": [
+                    "channels"
+                ],
+                "summary": "Get a radio station's live broadcast stream",
+                "responses": {
+                    "302": {
+                        "description": "Redirect response",
+                        "headers": {
+                            "Location": {
+                                "description": "URL of the station's broadcast stream",
+                                "schema": {
+                                    "type": "string",
+                                    "example": "https://kut2.streamguys1.com/kut2?listening-from-radio-garden=1638918264"
+                                }
+                            }
+                        },
+                        "content": {
+                            "text/html": {
+                                "schema": {
+                                    "type": "string",
+                                    "example": "Redirecting to <a href=\"https: //kut2.streamguys1.com/kut2\">https://kut2.streamguys1.com/kut2</a>."
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "head": {
+                "tags": [
+                    "channels"
+                ],
+                "summary": "Get a radio station's live broadcast stream",
+                "responses": {
+                    "302": {
+                        "description": "Redirect response",
+                        "headers": {
+                            "Location": {
+                                "description": "URL of the station's broadcast stream",
+                                "schema": {
+                                    "type": "string",
+                                    "example": "https://kut2.streamguys1.com/kut2?listening-from-radio-garden=1638918264"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/search": {
+            "parameters": [
+                {
+                    "name": "q",
+                    "in": "query",
+                    "description": "Search query",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "get": {
+                "tags": [
+                    "search"
+                ],
+                "summary": "Search for countries, places, and radio stations",
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/Versioned"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/SearchResults"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/geo": {
+            "get": {
+                "tags": [
+                    "geo"
+                ],
+                "summary": "Get the client's geolocation",
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Geolocation"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Versioned": {
+                "type": "object",
+                "properties": {
+                    "apiVersion": {
+                        "type": "integer",
+                        "format": "int32",
+                        "example": 1
+                    },
+                    "version": {
+                        "type": "string",
+                        "example": "9bd5454"
+                    }
+                }
+            },
+            "Place": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "Aq7xeIiB"
+                    },
+                    "geo": {
+                        "type": "array",
+                        "items": {
+                            "type": "number",
+                            "format": "float"
+                        },
+                        "minItems": 2,
+                        "maxItems": 2,
+                        "example": [
+                            -97.74306,
+                            30.267153
+                        ]
+                    },
+                    "url": {
+                        "type": "string",
+                        "example": "/visit/austin-tx/Aq7xeIiB"
+                    },
+                    "size": {
+                        "type": "integer",
+                        "format": "int32",
+                        "example": 21
+                    },
+                    "boost": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "title": {
+                        "type": "string",
+                        "example": "Austin TX"
+                    },
+                    "country": {
+                        "type": "string",
+                        "example": "United States"
+                    }
+                }
+            },
+            "PlaceContent": {
+                "type": "object",
+                "properties": {
+                    "content": {
+                        "type": "array",
+                        "items": {
+                            "oneOf": [
+                                {
+                                    "$ref": "#/components/schemas/SelectedStations"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/LocalPopularStations"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/LocalPickStations"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/CountryPopularStations"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/NearbyPlaces"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/Cities"
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "SelectedStations": {
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "example": "Selected Stations"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "list"
+                    },
+                    "itemsType": {
+                        "type": "string",
+                        "example": "channel"
+                    },
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "oneOf": [
+                                {
+                                    "$ref": "#/components/schemas/ChannelRef"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/MoreRef"
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "LocalPopularStations": {
+                "type": "object",
+                "properties": {
+                    "actionPage": {
+                        "$ref": "#/components/schemas/PlaceRef"
+                    },
+                    "actionText": {
+                        "type": "string",
+                        "example": "See all"
+                    },
+                    "title": {
+                        "type": "string",
+                        "example": "Popular in Austin TX"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "list"
+                    },
+                    "itemsType": {
+                        "type": "string",
+                        "example": "channel"
+                    },
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ChannelRef"
+                        }
+                    }
+                }
+            },
+            "LocalPickStations": {
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "example": "Picks from the area"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "list"
+                    },
+                    "itemsType": {
+                        "type": "string",
+                        "example": "channel"
+                    },
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ChannelPlaceRef"
+                        }
+                    }
+                }
+            },
+            "CountryPopularStations": {
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "example": "Popular in United States"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "list"
+                    },
+                    "itemsType": {
+                        "type": "string",
+                        "example": "channel"
+                    },
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "oneOf": [
+                                {
+                                    "$ref": "#/components/schemas/ChannelPlaceRef"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/MoreRef"
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "NearbyPlaces": {
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "example": "Nearby Austin TX"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "list"
+                    },
+                    "rightAccessory": {
+                        "type": "string",
+                        "example": "chevron-right"
+                    },
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/RightPageRef"
+                        }
+                    }
+                }
+            },
+            "Cities": {
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "example": "Cities in United States"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "list"
+                    },
+                    "rightAccessory": {
+                        "type": "string",
+                        "example": "chevron-right"
+                    },
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/LeftPageRef"
+                        }
+                    }
+                }
+            },
+            "MoreRef": {
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "example": "View all 21 stations"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "more"
+                    },
+                    "rightAccessory": {
+                        "type": "string",
+                        "example": "chevron-right"
+                    },
+                    "page": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/PlaceRef"
+                            },
+                            {
+                                "$ref": "#/components/schemas/CountryRef"
+                            }
+                        ]
+                    }
+                }
+            },
+            "CountryRef": {
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "example": "United States"
+                    },
+                    "url": {
+                        "type": "string",
+                        "example": "/visit/united-states/GhDXw4EW"
+                    },
+                    "map": {
+                        "type": "array",
+                        "items": {
+                            "type": "number",
+                            "format": "float"
+                        },
+                        "minItems": 2,
+                        "maxItems": 2,
+                        "example": [
+                            -74.00114,
+                            40.611214
+                        ]
+                    }
+                }
+            },
+            "RightPageRef": {
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "example": "Georgetown TX"
+                    },
+                    "rightDetail": {
+                        "type": "string",
+                        "example": "41 km"
+                    },
+                    "page": {
+                        "$ref": "#/components/schemas/PlaceRef"
+                    }
+                }
+            },
+            "LeftPageRef": {
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "example": "New York NY"
+                    },
+                    "leftAccessory": {
+                        "type": "string",
+                        "example": "count"
+                    },
+                    "leftAccessoryCount": {
+                        "type": "integer",
+                        "format": "int32",
+                        "example": 219
+                    },
+                    "page": {
+                        "$ref": "#/components/schemas/PlaceRef"
+                    }
+                }
+            },
+            "PlaceRef": {
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "example": "Austin TX"
+                    },
+                    "subtitle": {
+                        "type": "string",
+                        "example": "All Stations"
+                    },
+                    "url": {
+                        "type": "string",
+                        "example": "/visit/austin-tx/Aq7xeIiB/channels"
+                    },
+                    "map": {
+                        "type": "string",
+                        "example": "Aq7xeIiB"
+                    },
+                    "count": {
+                        "type": "integer",
+                        "format": "int32",
+                        "example": 21
+                    },
+                    "utcOffset": {
+                        "type": "integer",
+                        "format": "int32",
+                        "example": -360
+                    }
+                }
+            },
+            "ChannelRefs": {
+                "type": "object",
+                "properties": {
+                    "itemsType": {
+                        "type": "string",
+                        "example": "channel"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "list"
+                    },
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ChannelRef"
+                        }
+                    }
+                }
+            },
+            "ChannelRef": {
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "example": "KUTX FM 98.9"
+                    },
+                    "href": {
+                        "type": "string",
+                        "example": "/listen/kutx-98-9/vbFsCngB"
+                    }
+                }
+            },
+            "ChannelPlaceRef": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/ChannelRef"
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "subtitle": {
+                                "type": "string",
+                                "example": "Georgetown TX"
+                            },
+                            "map": {
+                                "type": "string",
+                                "example": "BQP3R6jj"
+                            }
+                        }
+                    }
+                ]
+            },
+            "Channel": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "vbFsCngB"
+                    },
+                    "title": {
+                        "type": "string",
+                        "example": "KUTX FM 98.9"
+                    },
+                    "url": {
+                        "type": "string",
+                        "example": "/listen/kutx-98-9/vbFsCngB"
+                    },
+                    "website": {
+                        "type": "string",
+                        "example": "http://www.kutx.org"
+                    },
+                    "secure": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "place": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "example": "Aq7xeIiB"
+                            },
+                            "title": {
+                                "type": "string",
+                                "example": "Austin TX"
+                            }
+                        }
+                    },
+                    "country": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "example": "GhDXw4EW"
+                            },
+                            "title": {
+                                "type": "string",
+                                "example": "United States"
+                            }
+                        }
+                    }
+                }
+            },
+            "SearchResults": {
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string",
+                        "example": "kutx"
+                    },
+                    "took": {
+                        "type": "integer",
+                        "format": "int32",
+                        "example": 1
+                    },
+                    "hits": {
+                        "type": "object",
+                        "properties": {
+                            "hits": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/components/schemas/SearchResult"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "SearchResult": {
+                "type": "object",
+                "properties": {
+                    "_id": {
+                        "type": "string",
+                        "example": "602749"
+                    },
+                    "_score": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 165.90909
+                    },
+                    "_source": {
+                        "type": "object",
+                        "properties": {
+                            "code": {
+                                "type": "string",
+                                "example": "US"
+                            },
+                            "subtitle": {
+                                "type": "string",
+                                "example": "Austin TX, United States"
+                            },
+                            "type": {
+                                "type": "string",
+                                "example": "channel"
+                            },
+                            "title": {
+                                "type": "string",
+                                "example": "KUTX FM 98.9"
+                            },
+                            "url": {
+                                "type": "string",
+                                "example": "/listen/kutx-98-9/vbFsCngB"
+                            }
+                        }
+                    }
+                }
+            },
+            "Geolocation": {
+                "type": "object",
+                "properties": {
+                    "ip": {
+                        "type": "string",
+                        "example": "f52f:80fc:ece8:8afc:2fc9:2e9b:a67e:4100"
+                    },
+                    "country_code": {
+                        "type": "string",
+                        "example": "US"
+                    },
+                    "country_name": {
+                        "type": "string",
+                        "example": "United States"
+                    },
+                    "region_code": {
+                        "type": "string",
+                        "example": "TX"
+                    },
+                    "region_name": {
+                        "type": "string",
+                        "example": "Texas"
+                    },
+                    "city": {
+                        "type": "string",
+                        "example": "Austin"
+                    },
+                    "zip_code": {
+                        "type": "string",
+                        "example": "78799"
+                    },
+                    "time_zone": {
+                        "type": "string",
+                        "example": "America/Chicago"
+                    },
+                    "latitude": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 30.26715
+                    },
+                    "longitude": {
+                        "type": "number",
+                        "format": "float",
+                        "example": -97.74306
+                    },
+                    "metro_code": {
+                        "type": "integer",
+                        "format": "int32",
+                        "example": 635
+                    }
+                }
+            }
+        }
+    }
+}
